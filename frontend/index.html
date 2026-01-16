@@ -1,0 +1,862 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Counter Manufacturing QA System | HP ZGX Nano</title>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --hp-blue: #0096D6;
+            --hp-dark-blue: #024AD8;
+            --counter-cream: #faf7f2;
+            --counter-dark: #1a1a1a;
+            --counter-accent: #8b7355;
+            --panel-bg: #ffffff;
+            --panel-border: #e5e0d8;
+            --text-primary: #1a1a1a;
+            --text-secondary: #6b6b6b;
+            --text-muted: #9a9a9a;
+            --success: #22c55e;
+            --warning: #f59e0b;
+            --danger: #dc2626;
+            --info: #3b82f6;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--counter-cream);
+            color: var(--text-primary);
+            min-height: 100vh;
+            line-height: 1.6;
+        }
+
+        /* Header */
+        .header {
+            background: linear-gradient(180deg, #ffffff 0%, #faf7f2 100%);
+            border-bottom: 1px solid var(--panel-border);
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+        }
+
+        .hp-logo {
+            height: 32px;
+        }
+
+        .header-title {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .header-title h1 {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            letter-spacing: -0.02em;
+        }
+
+        .header-title span {
+            font-size: 0.75rem;
+            color: var(--hp-blue);
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .counter-logo {
+            height: 36px;
+            margin-right: 1rem;
+        }
+
+        .counter-logo-text {
+            font-size: 1.5rem;
+            font-weight: 700;
+            letter-spacing: 0.15em;
+            color: var(--counter-dark);
+            margin-right: 1rem;
+        }
+
+        .status-indicator {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: var(--success);
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        /* QA Banner */
+        .qa-banner {
+            background: linear-gradient(90deg, var(--counter-dark) 0%, #2d2d2d 100%);
+            padding: 0.5rem;
+            text-align: center;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: #ffffff;
+            letter-spacing: 0.1em;
+        }
+
+        .qa-banner span {
+            color: var(--success);
+        }
+
+        /* Main Layout */
+        .main-container {
+            display: grid;
+            grid-template-columns: 380px 1fr;
+            gap: 0;
+            min-height: calc(100vh - 140px);
+        }
+
+        /* Sidebar */
+        .sidebar {
+            background: var(--panel-bg);
+            border-right: 1px solid var(--panel-border);
+            padding: 1.5rem;
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+
+        .panel {
+            background: #ffffff;
+            border: 1px solid var(--panel-border);
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+        }
+
+        .panel-header {
+            background: linear-gradient(135deg, rgba(139, 115, 85, 0.1) 0%, rgba(139, 115, 85, 0.02) 100%);
+            border-bottom: 1px solid var(--panel-border);
+            padding: 0.75rem 1rem;
+            font-size: 0.8rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: var(--counter-accent);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .panel-content {
+            padding: 1rem;
+        }
+
+        /* Upload Area */
+        .upload-zone {
+            border: 2px dashed var(--panel-border);
+            border-radius: 8px;
+            padding: 2rem 1rem;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            background: rgba(139, 115, 85, 0.02);
+        }
+
+        .upload-zone:hover {
+            border-color: var(--counter-accent);
+            background: rgba(139, 115, 85, 0.05);
+        }
+
+        .upload-zone.dragover {
+            border-color: var(--success);
+            background: rgba(34, 197, 94, 0.1);
+        }
+
+        .upload-zone.has-image {
+            padding: 0.5rem;
+            border-style: solid;
+            border-color: var(--success);
+        }
+
+        .upload-icon {
+            font-size: 2.5rem;
+            margin-bottom: 0.75rem;
+        }
+
+        .upload-text {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+        }
+
+        .upload-text strong {
+            color: var(--counter-accent);
+        }
+
+        .preview-image {
+            max-width: 100%;
+            max-height: 200px;
+            border-radius: 4px;
+            object-fit: contain;
+        }
+
+        #file-input {
+            display: none;
+        }
+
+        /* Form Elements */
+        .form-group {
+            margin-bottom: 1rem;
+        }
+
+        .form-group:last-child {
+            margin-bottom: 0;
+        }
+
+        .form-label {
+            display: block;
+            font-size: 0.8rem;
+            font-weight: 500;
+            color: var(--text-secondary);
+            margin-bottom: 0.5rem;
+            text-transform: uppercase;
+            letter-spacing: 0.03em;
+        }
+
+        .form-select, .form-textarea {
+            width: 100%;
+            padding: 0.75rem;
+            background: #ffffff;
+            border: 1px solid var(--panel-border);
+            border-radius: 6px;
+            color: var(--text-primary);
+            font-family: inherit;
+            font-size: 0.9rem;
+            transition: border-color 0.2s;
+        }
+
+        .form-select:focus, .form-textarea:focus {
+            outline: none;
+            border-color: var(--counter-accent);
+        }
+
+        .form-textarea {
+            resize: vertical;
+            min-height: 80px;
+        }
+
+        /* Inspect Button */
+        .btn-inspect {
+            width: 100%;
+            padding: 1rem;
+            background: linear-gradient(135deg, var(--counter-dark) 0%, #2d2d2d 100%);
+            border: none;
+            border-radius: 8px;
+            color: white;
+            font-family: inherit;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.75rem;
+        }
+
+        .btn-inspect:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+        }
+
+        .btn-inspect:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .btn-inspect.loading {
+            background: var(--text-muted);
+        }
+
+        /* Results Area */
+        .results-area {
+            padding: 1.5rem 2rem;
+            overflow-y: auto;
+            background: var(--counter-cream);
+        }
+
+        .empty-state {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100%;
+            text-align: center;
+            color: var(--text-muted);
+        }
+
+        .empty-state-icon {
+            font-size: 4rem;
+            margin-bottom: 1rem;
+            opacity: 0.5;
+        }
+
+        .empty-state h3 {
+            font-size: 1.25rem;
+            color: var(--text-secondary);
+            margin-bottom: 0.5rem;
+        }
+
+        /* QA Report */
+        .qa-report {
+            background: #ffffff;
+            border: 1px solid var(--panel-border);
+            border-radius: 12px;
+            overflow: hidden;
+            font-family: 'JetBrains Mono', monospace;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.06);
+        }
+
+        .report-header {
+            background: linear-gradient(135deg, rgba(139, 115, 85, 0.15) 0%, rgba(139, 115, 85, 0.05) 100%);
+            border-bottom: 1px solid var(--panel-border);
+            padding: 1rem 1.5rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+        }
+
+        .report-id {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: var(--counter-dark);
+        }
+
+        .report-batch {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            margin-top: 0.25rem;
+        }
+
+        .severity-badge {
+            font-size: 0.75rem;
+            padding: 0.35rem 0.85rem;
+            border-radius: 4px;
+            font-weight: 700;
+            letter-spacing: 0.05em;
+        }
+
+        .severity-CRITICAL {
+            background: rgba(220, 38, 38, 0.15);
+            color: var(--danger);
+            border: 1px solid var(--danger);
+        }
+
+        .severity-MAJOR {
+            background: rgba(245, 158, 11, 0.15);
+            color: var(--warning);
+            border: 1px solid var(--warning);
+        }
+
+        .severity-MINOR {
+            background: rgba(59, 130, 246, 0.15);
+            color: var(--info);
+            border: 1px solid var(--info);
+        }
+
+        .severity-PASS {
+            background: rgba(34, 197, 94, 0.15);
+            color: var(--success);
+            border: 1px solid var(--success);
+        }
+
+        .report-body {
+            padding: 1.5rem;
+        }
+
+        .report-section {
+            margin-bottom: 1.5rem;
+        }
+
+        .report-section:last-child {
+            margin-bottom: 0;
+        }
+
+        .report-section-title {
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            margin-bottom: 0.5rem;
+            padding-bottom: 0.25rem;
+            border-bottom: 1px solid var(--panel-border);
+        }
+
+        .report-field {
+            display: grid;
+            grid-template-columns: 140px 1fr;
+            gap: 0.5rem;
+            margin-bottom: 0.5rem;
+            font-size: 0.85rem;
+        }
+
+        .report-field-label {
+            color: var(--text-muted);
+        }
+
+        .report-field-value {
+            color: var(--text-primary);
+        }
+
+        .report-field-value.highlight {
+            color: var(--counter-accent);
+            font-weight: 500;
+        }
+
+        .analysis-content {
+            background: var(--counter-cream);
+            border: 1px solid var(--panel-border);
+            border-radius: 6px;
+            padding: 1rem;
+            font-size: 0.85rem;
+            line-height: 1.7;
+            color: var(--text-primary);
+            white-space: pre-wrap;
+        }
+
+        /* Alert Box */
+        .alert-box {
+            background: rgba(220, 38, 38, 0.1);
+            border: 1px solid var(--danger);
+            border-radius: 8px;
+            padding: 1rem;
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: flex-start;
+            gap: 0.75rem;
+        }
+
+        .alert-box.warning {
+            background: rgba(245, 158, 11, 0.1);
+            border-color: var(--warning);
+        }
+
+        .alert-icon {
+            font-size: 1.5rem;
+        }
+
+        .alert-content h4 {
+            font-size: 0.9rem;
+            font-weight: 600;
+            margin-bottom: 0.25rem;
+        }
+
+        .alert-content p {
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+        }
+
+        /* Loading Animation */
+        .spinner {
+            width: 20px;
+            height: 20px;
+            border: 2px solid transparent;
+            border-top-color: currentColor;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* Footer */
+        .footer {
+            background: #ffffff;
+            border-top: 1px solid var(--panel-border);
+            padding: 0.75rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.75rem;
+            color: var(--text-muted);
+        }
+
+        .footer-brand {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .footer-brand svg {
+            color: var(--hp-blue);
+        }
+
+        /* Responsive */
+        @media (max-width: 1024px) {
+            .main-container {
+                grid-template-columns: 1fr;
+            }
+
+            .sidebar {
+                border-right: none;
+                border-bottom: 1px solid var(--panel-border);
+            }
+
+            .results-area {
+                min-height: 60vh;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <div class="header-left">
+            <img src="/static/hp_logo.png" alt="HP" class="hp-logo" onerror="this.style.display='none'">
+            <div class="header-title">
+                <h1>Manufacturing Quality Assurance System</h1>
+                <span>Powered by HP ZGX Nano AI Station</span>
+            </div>
+        </div>
+        <div class="header-right">
+            <span class="counter-logo-text">COUNTER</span>
+            <div class="status-indicator">
+                <div class="status-dot" id="status-dot"></div>
+                <span id="status-text">System Ready</span>
+            </div>
+        </div>
+    </header>
+
+    <div class="qa-banner">
+        QUALITY CONTROL INSPECTION STATION • <span>VISION AI ENABLED</span>
+    </div>
+
+    <main class="main-container">
+        <aside class="sidebar">
+            <div class="panel">
+                <div class="panel-header">
+                    <span>📷</span> Product Image Upload
+                </div>
+                <div class="panel-content">
+                    <div class="upload-zone" id="upload-zone">
+                        <input type="file" id="file-input" accept="image/*">
+                        <div id="upload-placeholder">
+                            <div class="upload-icon">🔍</div>
+                            <div class="upload-text">
+                                <strong>Click to upload</strong> or drag and drop<br>
+                                Product image for inspection (PNG, JPG)
+                            </div>
+                        </div>
+                        <img id="preview-image" class="preview-image" style="display: none;">
+                    </div>
+                </div>
+            </div>
+
+            <div class="panel">
+                <div class="panel-header">
+                    <span>📦</span> Product Line Selection
+                </div>
+                <div class="panel-content">
+                    <div class="form-group">
+                        <label class="form-label" for="product-line">Select Product Line</label>
+                        <select class="form-select" id="product-line">
+                            <option value="skincare_serum">Skincare Serums</option>
+                            <option value="moisturizer">Moisturizers & Creams</option>
+                            <option value="lip_products">Lip Products</option>
+                            <option value="mascara">Mascara & Eye Products</option>
+                            <option value="body_care">Body Care</option>
+                            <option value="sunscreen">Sun Protection</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="custom-instructions">Additional Notes</label>
+                        <textarea 
+                            class="form-textarea" 
+                            id="custom-instructions" 
+                            placeholder="Optional: specific inspection focus, known issues, etc."
+                        ></textarea>
+                    </div>
+                </div>
+            </div>
+
+            <button class="btn-inspect" id="inspect-btn" disabled>
+                <span class="btn-text">Run Quality Inspection</span>
+            </button>
+        </aside>
+
+        <section class="results-area" id="results-area">
+            <div class="empty-state" id="empty-state">
+                <div class="empty-state-icon">🔬</div>
+                <h3>No Inspection Report</h3>
+                <p>Upload a product image and select the product line to run a quality inspection.</p>
+                <p style="margin-top: 1rem; font-size: 0.85rem;">The AI vision system will analyze for defects including discoloration, contamination, fill levels, and packaging integrity.</p>
+            </div>
+            <div id="report-container" style="display: none;"></div>
+        </section>
+    </main>
+
+    <footer class="footer">
+        <div class="footer-brand">
+            <svg height="16" viewBox="0 0 100 100" fill="currentColor">
+                <circle cx="50" cy="50" r="48" fill="none" stroke="currentColor" stroke-width="4"/>
+                <text x="50" y="62" text-anchor="middle" font-size="32" font-weight="bold">HP</text>
+            </svg>
+            <span>ZGX Nano AI Station</span>
+        </div>
+        <div>
+            <span id="timestamp"></span>
+        </div>
+    </footer>
+
+    <script>
+        // DOM Elements
+        const uploadZone = document.getElementById('upload-zone');
+        const fileInput = document.getElementById('file-input');
+        const previewImage = document.getElementById('preview-image');
+        const uploadPlaceholder = document.getElementById('upload-placeholder');
+        const productLine = document.getElementById('product-line');
+        const customInstructions = document.getElementById('custom-instructions');
+        const inspectBtn = document.getElementById('inspect-btn');
+        const resultsArea = document.getElementById('results-area');
+        const emptyState = document.getElementById('empty-state');
+        const reportContainer = document.getElementById('report-container');
+        const statusDot = document.getElementById('status-dot');
+        const statusText = document.getElementById('status-text');
+        const timestampEl = document.getElementById('timestamp');
+
+        let selectedFile = null;
+
+        // Update timestamp
+        function updateTimestamp() {
+            const now = new Date();
+            timestampEl.textContent = now.toISOString().replace('T', ' ').substring(0, 19) + ' UTC';
+        }
+        updateTimestamp();
+        setInterval(updateTimestamp, 1000);
+
+        // File Upload Handlers
+        uploadZone.addEventListener('click', () => fileInput.click());
+
+        uploadZone.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            uploadZone.classList.add('dragover');
+        });
+
+        uploadZone.addEventListener('dragleave', () => {
+            uploadZone.classList.remove('dragover');
+        });
+
+        uploadZone.addEventListener('drop', (e) => {
+            e.preventDefault();
+            uploadZone.classList.remove('dragover');
+            const files = e.dataTransfer.files;
+            if (files.length > 0 && files[0].type.startsWith('image/')) {
+                handleFile(files[0]);
+            }
+        });
+
+        fileInput.addEventListener('change', (e) => {
+            if (e.target.files.length > 0) {
+                handleFile(e.target.files[0]);
+            }
+        });
+
+        function handleFile(file) {
+            selectedFile = file;
+            
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                previewImage.src = e.target.result;
+                previewImage.style.display = 'block';
+                uploadPlaceholder.style.display = 'none';
+                uploadZone.classList.add('has-image');
+            };
+            reader.readAsDataURL(file);
+            
+            inspectBtn.disabled = false;
+        }
+
+        // Inspection
+        inspectBtn.addEventListener('click', async () => {
+            if (!selectedFile) return;
+
+            // Update UI state
+            inspectBtn.disabled = true;
+            inspectBtn.classList.add('loading');
+            inspectBtn.innerHTML = '<div class="spinner"></div><span>Analyzing Product...</span>';
+            statusDot.style.background = 'var(--warning)';
+            statusText.textContent = 'Processing...';
+
+            const formData = new FormData();
+            formData.append('image', selectedFile);
+            formData.append('product_line', productLine.value);
+            formData.append('custom_instructions', customInstructions.value);
+
+            try {
+                const response = await fetch('/api/inspect', {
+                    method: 'POST',
+                    body: formData
+                });
+
+                if (!response.ok) {
+                    throw new Error(`Inspection failed: ${response.statusText}`);
+                }
+
+                const report = await response.json();
+                displayReport(report);
+
+                // Update status based on severity
+                if (report.severity === 'CRITICAL' || report.severity === 'MAJOR') {
+                    statusDot.style.background = 'var(--danger)';
+                    statusText.textContent = `${report.severity} Defect Detected`;
+                } else if (report.severity === 'MINOR') {
+                    statusDot.style.background = 'var(--warning)';
+                    statusText.textContent = 'Minor Issue Found';
+                } else {
+                    statusDot.style.background = 'var(--success)';
+                    statusText.textContent = 'Inspection Passed';
+                }
+
+            } catch (error) {
+                console.error('Inspection error:', error);
+                statusDot.style.background = 'var(--danger)';
+                statusText.textContent = 'Inspection Failed';
+                alert('Failed to inspect product: ' + error.message);
+            } finally {
+                inspectBtn.disabled = false;
+                inspectBtn.classList.remove('loading');
+                inspectBtn.innerHTML = '<span class="btn-text">Run Quality Inspection</span>';
+            }
+        });
+
+        function displayReport(report) {
+            emptyState.style.display = 'none';
+            reportContainer.style.display = 'block';
+
+            // Build alert box if needed
+            let alertHtml = '';
+            if (report.severity === 'CRITICAL') {
+                alertHtml = `
+                    <div class="alert-box">
+                        <div class="alert-icon">🚨</div>
+                        <div class="alert-content">
+                            <h4>CRITICAL DEFECT DETECTED - LINE STOP REQUIRED</h4>
+                            <p>${report.action_required}</p>
+                            <p style="margin-top: 0.5rem;">Alert sent to: ${report.alert_recipient}</p>
+                        </div>
+                    </div>
+                `;
+            } else if (report.severity === 'MAJOR') {
+                alertHtml = `
+                    <div class="alert-box warning">
+                        <div class="alert-icon">⚠️</div>
+                        <div class="alert-content">
+                            <h4>MAJOR DEFECT - QUARANTINE REQUIRED</h4>
+                            <p>${report.action_required}</p>
+                            <p style="margin-top: 0.5rem;">Alert sent to: ${report.alert_recipient}</p>
+                        </div>
+                    </div>
+                `;
+            }
+
+            reportContainer.innerHTML = `
+                ${alertHtml}
+                <div class="qa-report">
+                    <div class="report-header">
+                        <div>
+                            <div class="report-id">${report.inspection_id}</div>
+                            <div class="report-batch">Batch: ${report.batch_id}</div>
+                            <div style="font-size: 0.8rem; color: var(--text-secondary); margin-top: 0.25rem;">
+                                ${report.timestamp}
+                            </div>
+                        </div>
+                        <div class="severity-badge severity-${report.severity}">
+                            ${report.severity}
+                        </div>
+                    </div>
+                    <div class="report-body">
+                        <div class="report-section">
+                            <div class="report-section-title">Inspection Details</div>
+                            <div class="report-field">
+                                <span class="report-field-label">Product Line:</span>
+                                <span class="report-field-value highlight">${report.product_line}</span>
+                            </div>
+                            <div class="report-field">
+                                <span class="report-field-label">Batch ID:</span>
+                                <span class="report-field-value">${report.batch_id}</span>
+                            </div>
+                            <div class="report-field">
+                                <span class="report-field-label">Response Time:</span>
+                                <span class="report-field-value">${report.response_time}</span>
+                            </div>
+                            <div class="report-field">
+                                <span class="report-field-label">Action Required:</span>
+                                <span class="report-field-value">${report.action_required}</span>
+                            </div>
+                        </div>
+                        
+                        <div class="report-section">
+                            <div class="report-section-title">Visual Analysis Report</div>
+                            <div class="analysis-content">${escapeHtml(report.analysis)}</div>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        // Health check
+        async function checkHealth() {
+            try {
+                const response = await fetch('/api/health');
+                const data = await response.json();
+                if (data.blip2_model_loaded) {
+                    statusDot.style.background = 'var(--success)';
+                    statusText.textContent = 'Vision AI Ready';
+                } else {
+                    statusDot.style.background = 'var(--warning)';
+                    statusText.textContent = 'Model Loading...';
+                }
+            } catch {
+                statusDot.style.background = 'var(--danger)';
+                statusText.textContent = 'Connection Error';
+            }
+        }
+
+        checkHealth();
+    </script>
+</body>
+</html>
